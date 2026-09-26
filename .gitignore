@@ -87,3 +87,8 @@ ServerData/
 *.temp
 *.bak
 *.swp
+
+*.shader linguist-detectable=false
+*.shaderlab linguist-detectable=false
+*.hlsl linguist-detectable=false
+*.cginc linguist-detectable=false
