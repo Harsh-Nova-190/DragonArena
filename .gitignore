@@ -88,7 +88,15 @@ ServerData/
 *.bak
 *.swp
 
+# ============================================
+# Remove Languages for Git
+# ============================================
+
+# Unity shader languages
+
 *.shader linguist-detectable=false
 *.shaderlab linguist-detectable=false
 *.hlsl linguist-detectable=false
 *.cginc linguist-detectable=false
+
+# Unity generated/meta files are still tracked normally
