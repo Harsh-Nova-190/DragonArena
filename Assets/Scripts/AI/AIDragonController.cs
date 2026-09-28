@@ -23,6 +23,9 @@ public class AIDragonController : MonoBehaviour
     [SerializeField] private TailAttack tailAttack;
     [SerializeField] private FlyAttack flyAttack;
 
+    [Header("Animation")]
+    [SerializeField] private Animator animator;
+
     private CharacterController characterController;
     private AIState currentState = AIState.Idle;
 
@@ -86,6 +89,9 @@ public class AIDragonController : MonoBehaviour
             return;
         }
 
+        if (animator != null)
+            animator.SetFloat("Speed", 0f);
+
         FacePlayer();
         ChooseAttack(distance);
     }
@@ -96,7 +102,12 @@ public class AIDragonController : MonoBehaviour
         direction.y = 0f;
 
         if (direction.sqrMagnitude < 0.01f)
+        {
+            if (animator != null)
+                animator.SetFloat("Speed", 0f);
+
             return;
+        }
 
         direction.Normalize();
 
@@ -112,6 +123,9 @@ public class AIDragonController : MonoBehaviour
             targetRotation,
             rotationSpeed * Time.deltaTime
         );
+
+        if (animator != null)
+            animator.SetFloat("Speed", 1f);
     }
 
     private void FacePlayer()

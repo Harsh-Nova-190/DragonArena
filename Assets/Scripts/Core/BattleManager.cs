@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -9,6 +10,9 @@ public class BattleManager : MonoBehaviour
 
     [Header("Winner UI")]
     [SerializeField] private WinnerScreen winnerScreen;
+
+    [Header("Victory Delay")]
+    [SerializeField] private float winnerDelay = 2f;
 
     private bool battleEnded;
 
@@ -36,8 +40,7 @@ public class BattleManager : MonoBehaviour
             return;
 
         battleEnded = true;
-
-        ShowWinner("AI Dragon");
+        StartCoroutine(ShowWinnerAfterDelay("AI Dragon"));
     }
 
     private void OnAIDeath()
@@ -46,16 +49,20 @@ public class BattleManager : MonoBehaviour
             return;
 
         battleEnded = true;
+        StartCoroutine(ShowWinnerAfterDelay("Player Dragon"));
+    }
 
-        ShowWinner("Player Dragon");
+    private IEnumerator ShowWinnerAfterDelay(string winnerName)
+    {
+        yield return new WaitForSeconds(winnerDelay);
+
+        ShowWinner(winnerName);
     }
 
     private void ShowWinner(string winnerName)
     {
         if (winnerScreen != null)
-        {
             winnerScreen.ShowWinner(winnerName);
-        }
     }
 
     public void RestartBattle()

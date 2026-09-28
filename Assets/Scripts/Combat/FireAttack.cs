@@ -5,6 +5,8 @@ public class FireAttack : Ability
     [Header("Fire Attack")]
     [SerializeField] private float attackRadius = 1.5f;
     [SerializeField] private LayerMask targetLayer;
+    [SerializeField] private Animator animator;
+    [SerializeField] private ParticleSystem fireBreathVFX;
 
     protected override void Awake()
     {
@@ -18,7 +20,20 @@ public class FireAttack : Ability
 
     protected override void Use()
     {
-        Vector3 origin = transform.position + Vector3.up * 1f;
+        if (animator != null)
+            animator.SetTrigger("FireAttack");
+
+        if (fireBreathVFX != null)
+        {
+            fireBreathVFX.Play();
+        }
+        else
+        {
+            Debug.LogError("Fire VFX reference is NULL!");
+        }
+
+
+            Vector3 origin = transform.position + Vector3.up * 1f;
 
         RaycastHit[] hits = Physics.SphereCastAll(
             origin,
@@ -30,6 +45,8 @@ public class FireAttack : Ability
 
         foreach (RaycastHit hit in hits)
         {
+            Debug.Log($"{abilityName} detected: {hit.collider.name}");
+
             Health target = hit.collider.GetComponentInParent<Health>();
 
             if (target != null && target.gameObject != gameObject)
@@ -40,7 +57,6 @@ public class FireAttack : Ability
                     $"{abilityName} hit {target.gameObject.name} for {damage} damage."
                 );
 
-                // Only damage the first valid target.
                 break;
             }
         }

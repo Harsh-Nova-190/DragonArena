@@ -6,6 +6,12 @@ public class TailAttack : Ability
     [SerializeField] private float attackRadius = 2f;
     [SerializeField] private LayerMask targetLayer;
 
+    [Header("Animation")]
+    [SerializeField] private Animator animator;
+
+    [Header("VFX")]
+    [SerializeField] private ParticleSystem impactVFX;
+
     protected override void Awake()
     {
         base.Awake();
@@ -21,6 +27,9 @@ public class TailAttack : Ability
         Vector3 attackCenter =
             transform.position + transform.forward * range;
 
+        if (animator != null)
+            animator.SetTrigger("TailAttack");
+
         Collider[] hits = Physics.OverlapSphere(
             attackCenter,
             attackRadius,
@@ -34,10 +43,38 @@ public class TailAttack : Ability
             if (target != null && target.gameObject != gameObject)
             {
                 target.TakeDamage(damage);
+
+                SpawnImpactVFX(target.transform.position);
+
+                break;
             }
         }
 
         Debug.Log($"{abilityName} used!");
+    }
+
+    private void SpawnImpactVFX(Vector3 position)
+    {
+        if (impactVFX == null)
+        {
+            Debug.LogWarning(
+                $"{name}: Tail Impact VFX is NOT assigned!"
+            );
+
+            return;
+        }
+
+        ParticleSystem effect = Instantiate(
+            impactVFX,
+            position + Vector3.up,
+            Quaternion.identity
+        );
+
+        effect.Play();
+
+        Destroy(effect.gameObject, 2f);
+
+        Debug.Log("Tail Impact VFX spawned!");
     }
 
     private void OnDrawGizmosSelected()

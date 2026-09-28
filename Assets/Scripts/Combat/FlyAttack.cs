@@ -8,6 +8,7 @@ public class FlyAttack : Ability
     [SerializeField] private LayerMask targetLayer;
     [SerializeField] private float flightHeight = 5f;
     [SerializeField] private float flightDuration = 0.8f;
+    [SerializeField] private Animator animator;
 
     private Vector3 groundPosition;
 
@@ -30,6 +31,9 @@ public class FlyAttack : Ability
 
     private IEnumerator FlyAttackRoutine()
     {
+        if(animator != null)
+            animator.SetTrigger("Fly");
+
         groundPosition = transform.position;
 
         Vector3 airPosition =
