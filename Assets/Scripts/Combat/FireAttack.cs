@@ -5,8 +5,13 @@ public class FireAttack : Ability
     [Header("Fire Attack")]
     [SerializeField] private float attackRadius = 1.5f;
     [SerializeField] private LayerMask targetLayer;
+
+    [Header("Animation")]
     [SerializeField] private Animator animator;
+
+    [Header("VFX")]
     [SerializeField] private ParticleSystem fireBreathVFX;
+    [SerializeField] private Transform fireBreathPoint;
 
     protected override void Awake()
     {
@@ -23,17 +28,21 @@ public class FireAttack : Ability
         if (animator != null)
             animator.SetTrigger("FireAttack");
 
-        if (fireBreathVFX != null)
+        // Spawn fire effect independently from the dragon.
+        if (fireBreathVFX != null && fireBreathPoint != null)
         {
-            fireBreathVFX.Play();
-        }
-        else
-        {
-            Debug.LogError("Fire VFX reference is NULL!");
+            ParticleSystem effect = Instantiate(
+                fireBreathVFX,
+                fireBreathPoint.position,
+                fireBreathPoint.rotation
+            );
+
+            effect.Play();
+
+            Destroy(effect.gameObject, 2f);
         }
 
-
-            Vector3 origin = transform.position + Vector3.up * 1f;
+        Vector3 origin = transform.position + Vector3.up * 1f;
 
         RaycastHit[] hits = Physics.SphereCastAll(
             origin,
@@ -45,8 +54,6 @@ public class FireAttack : Ability
 
         foreach (RaycastHit hit in hits)
         {
-            Debug.Log($"{abilityName} detected: {hit.collider.name}");
-
             Health target = hit.collider.GetComponentInParent<Health>();
 
             if (target != null && target.gameObject != gameObject)

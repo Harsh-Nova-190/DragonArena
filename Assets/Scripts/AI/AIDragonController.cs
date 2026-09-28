@@ -27,15 +27,53 @@ public class AIDragonController : MonoBehaviour
     [SerializeField] private Animator animator;
 
     private CharacterController characterController;
+
+    private Health health;
+    private Health playerHealth;
+
     private AIState currentState = AIState.Idle;
+
+    private bool isDead;
+    private bool playerIsDead;
 
     private void Awake()
     {
         characterController = GetComponent<CharacterController>();
+
+        health = GetComponent<Health>();
+
+        if (player != null)
+            playerHealth = player.GetComponent<Health>();
+    }
+
+    private void OnEnable()
+    {
+        if (health != null)
+            health.OnDeath += HandleDeath;
+
+        if (playerHealth != null)
+            playerHealth.OnDeath += HandlePlayerDeath;
+    }
+
+    private void OnDisable()
+    {
+        if (health != null)
+            health.OnDeath -= HandleDeath;
+
+        if (playerHealth != null)
+            playerHealth.OnDeath -= HandlePlayerDeath;
     }
 
     private void Update()
     {
+        // AI is dead.
+        if (isDead)
+            return;
+
+        // Player is dead, so stop fighting.
+        if (playerIsDead)
+            return;
+
         if (player == null)
             return;
 
@@ -160,5 +198,28 @@ public class AIDragonController : MonoBehaviour
         {
             tailAttack.TryUse();
         }
+    }
+
+    private void HandleDeath()
+    {
+        isDead = true;
+
+        currentState = AIState.Idle;
+
+        if (animator != null)
+        {
+            animator.SetFloat("Speed", 0f);
+            animator.SetTrigger("Die");
+        }
+    }
+
+    private void HandlePlayerDeath()
+    {
+        playerIsDead = true;
+
+        currentState = AIState.Idle;
+
+        if (animator != null)
+            animator.SetFloat("Speed", 0f);
     }
 }
